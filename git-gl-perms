@@ -1,0 +1,104 @@
+#!/bin/sh
+#
+# Copyright (c) 2010 Teemu Matilainen
+#
+# Display or edit permissions of gitolite wildcard repositories.
+
+NONGIT_OK=Yes
+OPTIONS_SPEC=
+USAGE='{get|set|edit}'
+LONG_USAGE='git gl-perms get [<remote>]
+        display permissions
+
+git gl-perms set [<remote>]
+        set permissions from stdin
+
+git gl-perms edir [<remote>]
+        edit permissions
+
+<remote>     Git URL or repository name'
+
+. git-sh-setup
+
+REMOTE_HOST=
+REMOTE_PORT=22
+REMOTE_PATH=
+
+is_git_repository() {
+	git rev-parse --git-dir >/dev/null 2>&1
+}
+
+resolve_remote() {
+	test -n "$REMOTE_HOST" && return
+
+	remote="$1"
+	url="$remote"
+
+	if is_git_repository; then
+		. git-parse-remote
+		test -z "$remote" && remote=$(get_default_remote)
+		url=$(get_remote_url "$remote")
+	elif test -z "$remote"; then
+		echo >&2 "fatal: Remote URL not specified"
+		usage
+	fi
+	case "$url" in
+		*ssh*://*)
+			tmp=${url#*://}
+			REMOTE_HOST=${tmp%%/*}
+			case "$REMOTE_HOST" in
+			*:*)
+				REMOTE_PORT=${REMOTE_HOST#*:}
+				REMOTE_HOST=${REMOTE_HOST%%:*}
+				;;
+			esac
+			case "$tmp" in
+			*/*) REMOTE_PATH=${tmp#*/} ;;
+			esac
+			;;
+		*://*)
+			die "fatal: Not an ssh protocol: '$url'"
+			;;
+		*:*)
+			REMOTE_HOST=${url%%:*}
+			REMOTE_PATH=${url#*:}
+			;;
+	esac
+	test -n "$REMOTE_HOST" -a -n "$REMOTE_PATH" || die "fatal: Invalid URL: '$url'"
+}
+
+ssh_command() {
+	echo >&2 "+ ssh \"$REMOTE_HOST\" -p \"$REMOTE_PORT\"" "$@"
+	ssh "$REMOTE_HOST" -p "$REMOTE_PORT" "$@"
+}
+
+getperms() {
+	resolve_remote "$1"
+	ssh_command getperms "$REMOTE_PATH"
+}
+
+setperms() {
+	resolve_remote "$1"
+	ssh_command setperms "$REMOTE_PATH"
+}
+
+editperms() {
+	resolve_remote "$1"
+	set -e
+	perms=$(tempfile -s .gl-perms)
+	trap "rm -f '$perms'" 0 1 2 3 15
+	getperms > "$perms"
+	git_editor "$perms"
+	test -s "$perms" && setperms < "$perms"
+}
+
+test "$#" -eq 0 && usage
+cmd="$1"
+shift
+case "$cmd" in
+	help) git gl-perms -h ;;
+	get)  getperms  "$@" ;;
+	set)  setperms  "$@" ;;
+	edit) editperms "$@" ;;
+	*)    usage ;;
+esac
