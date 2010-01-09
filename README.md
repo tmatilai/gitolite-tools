@@ -10,13 +10,14 @@ So far implemented:
 
 * git gl-perms - Display or edit permissions of
   [gitolite wildcard repositories][wildrepos].
+* git gl-info - Display [gitolite][] server information
 
 Installation
 ------------
 
 Makefile (or something similar) will come some day, but so far just
 
-	sudo cp git-gl-perms $(git --exec-path)/
+	sudo cp git-gl-* $(git --exec-path)/
 
 Copyright
 ---------
