@@ -20,66 +20,19 @@ git gl-perms edir [<remote>]
 
 . git-sh-setup
 
-REMOTE_HOST=
-REMOTE_PORT=22
-REMOTE_PATH=
-
-is_git_repository() {
-	git rev-parse --git-dir >/dev/null 2>&1
-}
-
-resolve_remote() {
-	test -n "$REMOTE_HOST" && return
-
-	remote="$1"
-	url="$remote"
-
-	if is_git_repository; then
-		. git-parse-remote
-		test -z "$remote" && remote=$(get_default_remote)
-		url=$(get_remote_url "$remote")
-	elif test -z "$remote"; then
-		echo >&2 "fatal: Remote URL not specified"
-		usage
-	fi
-	case "$url" in
-		*ssh*://*)
-			tmp=${url#*://}
-			REMOTE_HOST=${tmp%%/*}
-			case "$REMOTE_HOST" in
-			*:*)
-				REMOTE_PORT=${REMOTE_HOST#*:}
-				REMOTE_HOST=${REMOTE_HOST%%:*}
-				;;
-			esac
-			case "$tmp" in
-			*/*) REMOTE_PATH=${tmp#*/} ;;
-			esac
-			;;
-		*://*)
-			die "fatal: Not an ssh protocol: '$url'"
-			;;
-		*:*)
-			REMOTE_HOST=${url%%:*}
-			REMOTE_PATH=${url#*:}
-			;;
-	esac
-	test -n "$REMOTE_HOST" -a -n "$REMOTE_PATH" || die "fatal: Invalid URL: '$url'"
-}
-
-ssh_command() {
-	echo >&2 "+ ssh \"$REMOTE_HOST\" -p \"$REMOTE_PORT\"" "$@"
-	ssh "$REMOTE_HOST" -p "$REMOTE_PORT" "$@"
-}
+GL_PATH_NEEDED=Yes
+. git-gl-helpers
 
 getperms() {
 	resolve_remote "$1"
-	ssh_command getperms "$REMOTE_PATH"
+	gl_ssh_command getperms "$GL_PATH"
 }
 
 setperms() {
 	resolve_remote "$1"
-	ssh_command setperms "$REMOTE_PATH"
+	gl_ssh_command setperms "$GL_PATH"
+
+
 }
 
 editperms() {
