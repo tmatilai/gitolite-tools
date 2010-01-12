@@ -5,16 +5,18 @@ endif
 
 INSTALL = install
 
-SCRIPTS += git-gl-helpers
-SCRIPTS += git-gl-info
-SCRIPTS += git-gl-perms
+GIT_PROGRAMS += git-gl-helpers
+GIT_PROGRAMS += git-gl-info
+GIT_PROGRAMS += git-gl-perms
 
 all:
 
 clean:
 
-install: all
+install-git-programs:
 	$(INSTALL) -d -m 755 '$(DESTDIR)$(gitexecdir)'
-	$(INSTALL) $(SCRIPTS) '$(DESTDIR)$(gitexecdir)'
+	$(INSTALL) $(GIT_PROGRAMS) '$(DESTDIR)$(gitexecdir)'
 
-.PHONY: all clean install
+install: all install-git-programs
+
+.PHONY: all clean install install-git-programs
