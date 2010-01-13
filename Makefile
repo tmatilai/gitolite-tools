@@ -26,9 +26,9 @@ install-git-programs:
 
 install-vim:
 	$(INSTALL) -d -m 755 '$(DESTDIR)$(vimdir)/syntax'
-	$(INSTALL) vim/syntax/glperms.vim '$(DESTDIR)$(vimdir)/syntax'
+	$(INSTALL) -m 644 vim/syntax/glperms.vim '$(DESTDIR)$(vimdir)/syntax'
 	$(INSTALL) -d -m 755 '$(DESTDIR)$(vimdir)/ftdetect'
-	$(INSTALL) vim/ftdetect/gitolite-tools.vim '$(DESTDIR)$(vimdir)/ftdetect'
+	$(INSTALL) -m 644 vim/ftdetect/gitolite-tools.vim '$(DESTDIR)$(vimdir)/ftdetect'
 
 install: all install-git-programs install-vim
 
