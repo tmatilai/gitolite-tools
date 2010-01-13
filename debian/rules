@@ -4,4 +4,4 @@
 	dh $@
 
 override_dh_auto_install:
-	dh_auto_install -- gitexecdir=/usr/lib/git-core
+	dh_auto_install -- gitexecdir=/usr/lib/git-core vimdir=/usr/share/vim/addons
