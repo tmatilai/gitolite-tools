@@ -1,3 +1,10 @@
+gitolite-tools (0.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Add Vim syntax highlight. See README.Debian for more info.
+
+ -- Teemu Matilainen <teemu.matilainen@iki.fi>  Wed, 13 Jan 2010 20:38:57 +0200
+
 gitolite-tools (0.1-1) unstable; urgency=low
 
   * Initial release
