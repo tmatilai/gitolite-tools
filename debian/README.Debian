@@ -1,0 +1,16 @@
+gitolite-tools Vim addon
+------------------------
+
+This package also provides the Vim addon gitolite-tools, but it is not enable per
+default. If you want to enable it for your user account just execute
+
+	vim-addons install gitolite-tools
+
+Similarly, to enable it for all users of this system just execute (as root)
+
+	vim-addons -w install gitolite-tools
+
+vim-addons is provided by the vim-addon-manager package, have a look at its
+manpage for more information.
+
+ -- Teemu Matilainen <teemu.matilainen@iki.fi>  Wed, 13 Jan 2010 19:42:23 +0200

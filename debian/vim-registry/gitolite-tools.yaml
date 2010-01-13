@@ -1,0 +1,5 @@
+addon: gitolite-tools
+description: "syntax highlight for gitolite-tools commands"
+files:
+  - ftdetect/gitolite-tools.vim
+  - syntax/glperms.vim
