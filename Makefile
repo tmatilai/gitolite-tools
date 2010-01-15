@@ -33,6 +33,6 @@ install-vim:
 install: all install-git-programs install-vim
 
 dist:
-	git archive HEAD | gzip -9 > gitolite-tools.tar.gz
+	git archive --prefix='gitolite-tools/' HEAD | gzip -9 > gitolite-tools.tar.gz
 
 .PHONY: all clean install install-git-programs install-vim dist
