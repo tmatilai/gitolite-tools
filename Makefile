@@ -11,6 +11,7 @@ endif
 INSTALL = install
 RM = rm -f
 
+GIT_PROGRAMS += git-gl-desc
 GIT_PROGRAMS += git-gl-helpers
 GIT_PROGRAMS += git-gl-info
 GIT_PROGRAMS += git-gl-perms
