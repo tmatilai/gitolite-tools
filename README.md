@@ -42,4 +42,4 @@ Copyright (c) 2010 Teemu Matilainen <teemu.matilainen@iki.fi>
 License: [Apache 2](http://www.apache.org/licenses/LICENSE-2.0)
 
 [gitolite]: http://github.com/sitaramc/gitolite
-[wildrepos]: http://github.com/sitaramc/gitolite/tree/wildrepos
+[wildrepos]: http://github.com/sitaramc/gitolite/blob/master/doc/4-wildcard-repositories.mkd
