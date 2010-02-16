@@ -6,7 +6,7 @@
 
 NONGIT_OK=Yes
 OPTIONS_SPEC=
-USAGE='(get | set | edit) [<repository>]'
+USAGE='(get | set | edit | remove) [<repository>]'
 LONG_USAGE='git gl-desc get [<repository>]
         display description
 
@@ -15,6 +15,9 @@ git gl-desc set [<repository>]
 
 git gl-desc edir [<repository>]
         edit description
+
+git gl-desc remove [<repository>]
+        remove description
 
 <repository>   Git URL or remote name'
 
@@ -31,8 +34,6 @@ getdesc() {
 setdesc() {
 	resolve_remote "$1"
 	gl_ssh_command setdesc "$GL_PATH"
-
-
 }
 
 editdesc() {
@@ -45,13 +46,19 @@ editdesc() {
 	test -s "$desc" && setdesc < "$desc"
 }
 
+removedesc() {
+	resolve_remote "$1"
+	gl_ssh_command setdesc "$GL_PATH" < /dev/null
+}
+
 test "$#" -eq 0 && usage
 cmd="$1"
 shift
 case "$cmd" in
-	help) git gl-desc -h ;;
-	get)  getdesc  "$@" ;;
-	set)  setdesc  "$@" ;;
-	edit) editdesc "$@" ;;
-	*)    usage ;;
+	help)   git gl-desc -h ;;
+	get)    getdesc  "$@" ;;
+	set)    setdesc  "$@" ;;
+	edit)   editdesc "$@" ;;
+	remove) removedesc "$@" ;;
+	*)      usage ;;
 esac
