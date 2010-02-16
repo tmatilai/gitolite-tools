@@ -6,17 +6,17 @@
 
 NONGIT_OK=Yes
 OPTIONS_SPEC=
-USAGE='{get|set|edit}'
-LONG_USAGE='git gl-perms get [<remote>]
+USAGE='(get | set | edit) [<repository>]'
+LONG_USAGE='git gl-perms get [<repository>]
         display permissions
 
-git gl-perms set [<remote>]
+git gl-perms set [<repository>]
         set permissions from stdin
 
-git gl-perms edir [<remote>]
+git gl-perms edir [<repository>]
         edit permissions
 
-<remote>     Git URL or repository name'
+<repository>   Git URL or remote name'
 
 . git-sh-setup
 

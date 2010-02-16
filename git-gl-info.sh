@@ -6,11 +6,8 @@
 
 NONGIT_OK=Yes
 OPTIONS_SPEC=
-USAGE='[<remote>]'
-LONG_USAGE='git gl-info [<remote>]
-        display remote server information
-
-<remote>     Git URL or repository name'
+USAGE='[<server>]'
+LONG_USAGE='    <server>     Host name, git URL or remote name'
 
 . git-sh-setup
 . git-gl-helpers

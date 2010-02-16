@@ -6,17 +6,17 @@
 
 NONGIT_OK=Yes
 OPTIONS_SPEC=
-USAGE='{get|set|edit}'
-LONG_USAGE='git gl-desc get [<remote>]
+USAGE='(get | set | edit) [<repository>]'
+LONG_USAGE='git gl-desc get [<repository>]
         display description
 
-git gl-desc set [<remote>]
+git gl-desc set [<repository>]
         set description from stdin
 
-git gl-desc edir [<remote>]
+git gl-desc edir [<repository>]
         edit description
 
-<remote>     Git URL or remote name'
+<repository>   Git URL or remote name'
 
 . git-sh-setup
 
