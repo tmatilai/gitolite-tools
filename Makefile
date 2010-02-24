@@ -14,6 +14,7 @@ RM = rm -f
 SCRIPT_SH += git-gl-desc.sh
 SCRIPT_SH += git-gl-helpers.sh
 SCRIPT_SH += git-gl-info.sh
+SCRIPT_SH += git-gl-ls.sh
 SCRIPT_SH += git-gl-perms.sh
 
 SCRIPTS = $(patsubst %.sh,%,$(SCRIPT_SH))
