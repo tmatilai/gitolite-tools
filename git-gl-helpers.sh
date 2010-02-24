@@ -23,7 +23,7 @@ resolve_remote() {
 		test -z "$remote" && remote=$(get_default_remote)
 		url=$(get_remote_url "$remote")
 	elif test -z "$remote"; then
-		echo >&2 "fatal: Remote URL not specified"
+		echo >&2 "fatal: Repository/host not specified"
 		usage
 	fi
 	case "$url" in
@@ -56,6 +56,7 @@ resolve_remote() {
 }
 
 gl_ssh_command() {
-	echo >&2 "+ ssh \"$GL_HOST\" -p \"$GL_PORT\"" "$@"
+	test  -z "$GIT_QUIET" &&
+		echo >&2 "+ ssh \"$GL_HOST\" -p \"$GL_PORT\"" "$@"
 	ssh "$GL_HOST" -p "$GL_PORT" "$@"
 }
