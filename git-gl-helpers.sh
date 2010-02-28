@@ -8,6 +8,9 @@ GL_HOST=
 GL_PORT=22
 GL_PATH=
 
+# own gitolite username
+: ${GL_USER:=$USER}
+
 is_git_repository() {
 	git rev-parse --git-dir >/dev/null 2>&1
 }
