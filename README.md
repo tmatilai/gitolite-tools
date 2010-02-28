@@ -6,13 +6,12 @@ Description
 
 Collection of tools to work with [gitolite][] repositories.
 
-So far implemented:
-
+* git gl-info - Display [gitolite][] server information
+* git gl-ls - List accessible [gitolite][] repositories
 * git gl-desc - Display or edit description of
   [gitolite wildcard repositories][wildrepos].
 * git gl-perms - Display or edit permissions of
   [gitolite wildcard repositories][wildrepos].
-* git gl-info - Display [gitolite][] server information
 
 Installation
 ------------
