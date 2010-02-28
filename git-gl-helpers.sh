@@ -9,7 +9,8 @@ GL_PORT=22
 GL_PATH=
 
 # own gitolite username
-: ${GL_USER:=$USER}
+test -n "$GL_USER" ||
+	GL_USER=$(git config gitolite.username || echo "$USER")
 
 is_git_repository() {
 	git rev-parse --git-dir >/dev/null 2>&1
@@ -19,17 +20,28 @@ resolve_remote() {
 	test -n "$GL_HOST" && return
 
 	remote="$1"
-	url="$remote"
+	test -n "$remote" || remote=$(git config gitolite.remote)
 
 	if is_git_repository; then
 		. git-parse-remote
-		test -z "$remote" && remote=$(get_default_remote)
+		test -n "$remote" || remote=$(get_default_remote)
 		url=$(get_remote_url "$remote")
 	elif test -z "$remote"; then
-		echo >&2 "fatal: Repository/host not specified"
-		usage
+		url=$(git config gitolite.defaultRemote)
+	else
+		url="$remote"
 	fi
 	case "$url" in
+		"")
+			cat >&2 <<-_EOF
+			fatal: Remote repository/host not specified
+
+			Remote name, Git URL or SSH hostname should be given as a parameter.
+			The default value can also be specified in git configuration variable
+			"gitolite.remote" or (globally) "gitolite.defaultremote".
+			_EOF
+			exit 1
+			;;
 		*ssh*://*)
 			tmp=${url#*://}
 			GL_HOST=${tmp%%/*}
