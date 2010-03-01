@@ -4,20 +4,44 @@
 #
 # Display gitolite server information
 
-NONGIT_OK=Yes
-OPTIONS_SPEC=
-USAGE='[<server>]'
-LONG_USAGE='    <server>     Host name, git URL or remote name'
-
-. git-sh-setup
 . git-gl-helpers
 
-info() {
-	resolve_remote "$1"
-	gl_ssh_command info
-}
+NONGIT_OK=Yes
+OPTIONS_SPEC="\
+git gl-info [options] [<server>]
+--
+q,quiet        be quiet
+u,user=!       display info for the specied user (needs gitolite-admin access)
 
-case "$1" in
-	-*) usage ;;
-	*)  info  "$@" ;;
-esac
+    <server>      Host name, git URL or remote name
+"
+
+. git-sh-setup
+
+users=
+while test $# != 0; do
+	case "$1" in
+	-q|--quiet)
+		GIT_QUIET=1
+		;;
+	--no-quiet)
+		GIT_QUIET=
+		;;
+	-u|--user)
+		users="$users $2"
+		shift
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		usage
+		;;
+	esac
+	shift
+done
+test "$#" -le 1 || usage
+
+resolve_remote "$1"
+gl_ssh_command info $users
