@@ -72,6 +72,6 @@ resolve_remote() {
 
 gl_ssh_command() {
 	test  -z "$GIT_QUIET" &&
-		echo >&2 "+ ssh \"$GL_HOST\" -p \"$GL_PORT\"" "$@"
+		printf '+ ssh "%s" -p "%s" %s\n' "$GL_HOST" "$GL_PORT" "$*" >&2
 	ssh "$GL_HOST" -p "$GL_PORT" "$@"
 }
