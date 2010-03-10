@@ -75,3 +75,35 @@ gl_ssh_command() {
 		printf '+ ssh "%s" -p "%s" %s\n' "$GL_HOST" "$GL_PORT" "$*" >&2
 	ssh "$GL_HOST" -p "$GL_PORT" "$@"
 }
+
+gl_get_property() {
+	name="$1"
+	gl_ssh_command "get$name" "$GL_PATH"
+}
+
+gl_set_property() {
+	name="$1"
+	val="$2"
+	if test -z "$val"; then
+		val=$(cat) || exit $?
+	fi
+	test -n "$GIT_QUIET" && exec >/dev/null
+	printf '%s\n' "$val" | gl_ssh_command "set$name" "$GL_PATH"
+}
+
+gl_edit_property() {
+	name="$1"
+	set -e
+	file=$(tempfile -s ".gl-$name")
+	trap "rm -f '$file'" 0 1 2 3 15
+	gl_ssh_command "get$name" "$GL_PATH" > "$file"
+	git_editor "$file"
+	test -n "$GIT_QUIET" && exec >/dev/null
+	test -s "$file" && gl_ssh_command "set$name" "$GL_PATH" < "$file"
+}
+
+gl_delete_property() {
+	name="$1"
+	test -n "$GIT_QUIET" && exec >/dev/null
+	gl_ssh_command "set$name" "$GL_PATH" < /dev/null
+}

@@ -73,27 +73,8 @@ test -n "$action" || action="get"
 resolve_remote "$1"
 
 case "$action" in
-get)
-	gl_ssh_command getdesc "$GL_PATH"
-	;;
-set)
-	if test -z "$desc"; then
-		desc=$(cat) || exit $?
-	fi
-	test -n "$GIT_QUIET" && exec >/dev/null
-	printf '%s\n' "$desc" | gl_ssh_command setdesc "$GL_PATH"
-	;;
-edit)
-	set -e
-	desc_file=$(tempfile -s .gl-desc)
-	trap "rm -f '$desc_file'" 0 1 2 3 15
-	gl_ssh_command getdesc "$GL_PATH" > "$desc_file"
-	git_editor "$desc_file"
-	test -n "$GIT_QUIET" && exec >/dev/null
-	test -s "$desc_file" && gl_ssh_command setdesc "$GL_PATH" < "$desc_file"
-	;;
-delete)
-	test -n "$GIT_QUIET" && exec >/dev/null
-	gl_ssh_command setdesc "$GL_PATH" < /dev/null
-	;;
+	get)    gl_get_property "desc" ;;
+	set)    gl_set_property "desc" "$desc";;
+	edit)   gl_edit_property "desc" ;;
+	delete) gl_delete_property "desc" ;;
 esac
