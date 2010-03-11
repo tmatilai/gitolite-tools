@@ -93,11 +93,13 @@ gl_set_property() {
 
 gl_edit_property() {
 	name="$1"
+	edit_function="$2"
+	test -z "$edit_function" && edit_function="git_editor"
 	set -e
 	file=$(tempfile -s ".gl-$name")
 	trap "rm -f '$file'" 0 1 2 3 15
 	gl_ssh_command "get$name" "$GL_PATH" > "$file"
-	git_editor "$file"
+	eval "$edit_function" "'$file'"
 	test -n "$GIT_QUIET" && exec >/dev/null
 	test -s "$file" && gl_ssh_command "set$name" "$GL_PATH" < "$file"
 }
