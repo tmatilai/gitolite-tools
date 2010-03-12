@@ -4,61 +4,97 @@
 #
 # Display or edit description of gitolite wildcard repositories.
 
-NONGIT_OK=Yes
-OPTIONS_SPEC=
-USAGE='(get | set | edit | remove) [<repository>]'
-LONG_USAGE='git gl-desc get [<repository>]
-        display description
-
-git gl-desc set [<repository>]
-        set description from stdin
-
-git gl-desc edir [<repository>]
-        edit description
-
-git gl-desc remove [<repository>]
-        remove description
-
-<repository>   Git URL or remote name'
-
-. git-sh-setup
-
 GL_PATH_NEEDED=Yes
 . git-gl-helpers
 
-getdesc() {
-	resolve_remote "$1"
-	gl_ssh_command getdesc "$GL_PATH"
-}
+NONGIT_OK=Yes
+OPTIONS_SPEC="\
+git gl-desc [--get] [--output=<file>] [<repository>]
+git gl-desc --set[=<description> | --file=<file>] [<repository>]
+git gl-desc --edit [<repository>]
+git gl-desc --delete [<repository>]
+--
+q,quiet           be quiet
+v,verbose         be verbose
 
-setdesc() {
-	resolve_remote "$1"
-	gl_ssh_command setdesc "$GL_PATH"
-}
+  Actions
+get!              display description (default)
+set?!             set description (from stdin if not specified)
+edit!             edit description
+delete!           remove description
 
-editdesc() {
-	resolve_remote "$1"
-	set -e
-	desc=$(tempfile -s .gl-desc)
-	trap "rm -f '$desc'" 0 1 2 3 15
-	getdesc > "$desc"
-	git_editor "$desc"
-	test -s "$desc" && setdesc < "$desc"
-}
+  Options
+o,output=!        write the permissions to the specified file
+F,file=!          set the description from the specified file
 
-removedesc() {
-	resolve_remote "$1"
-	gl_ssh_command setdesc "$GL_PATH" < /dev/null
-}
+    <repository>       Git URL or remote name
+"
 
-test "$#" -eq 0 && usage
-cmd="$1"
-shift
-case "$cmd" in
-	help)   git gl-desc -h ;;
-	get)    getdesc  "$@" ;;
-	set)    setdesc  "$@" ;;
-	edit)   editdesc "$@" ;;
-	remove) removedesc "$@" ;;
-	*)      usage ;;
+. git-sh-setup
+
+action= desc= output=
+while test $# != 0; do
+	case "$1" in
+	-q|--quiet)
+		GIT_QUIET=1
+		VERBOSE=
+		;;
+	--no-quiet)
+		GIT_QUIET=
+		;;
+	-v|--verbose)
+		GIT_QUIET=
+		VERBOSE=1
+		;;
+	--no-verbose)
+		VERBOSE=
+		;;
+	--get)
+		test -z "$action" -o "$action" = "get" || usage
+		action="get"
+		;;
+	-o|--output)
+		test -z "$action" -o "$action" = "get" || usage
+		action="get"
+		output="$2"
+		shift
+		;;
+	--set)
+		test -z "$action" -o "$action" = "set" || usage
+		action="set"
+		case "$2" in
+			-*) ;;
+			*) desc="$2"; shift ;;
+		esac
+		;;
+	-F|--file)
+		test -z "$action" -o "$action" = "set" || usage
+		action="set"
+		desc=$(cat "$2") || exit $?
+		shift
+		;;
+	--edit|--delete)
+		test -z "$action" || usage
+		action=${1#--}
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		usage
+		;;
+	esac
+	shift
+done
+test "$#" -le 1 || usage
+test -n "$action" || action="get"
+
+resolve_remote "$1"
+
+case "$action" in
+	get)    gl_get_property "desc" "$output" ;;
+	set)    gl_set_property "desc" "$desc" ;;
+	edit)   gl_edit_property "desc" ;;
+	delete) gl_delete_property "desc" ;;
 esac
