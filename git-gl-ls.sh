@@ -13,6 +13,7 @@ git gl-ls [options] [<server>]
 --
 q,quiet        be quiet
 v,verbose      be verbose
+o,output=!     write the permissions to the specified file
 
  Filter options
 e,grep=!       list only repos that match the specified pattern
@@ -26,7 +27,7 @@ wildcard       list (non-)wildcard repositories
 
 . git-sh-setup
 
-pattern= creators= wildcard=
+output= pattern= creators= wildcard=
 while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
@@ -42,6 +43,10 @@ while test $# != 0; do
 		;;
 	--no-verbose)
 		VERBOSE=
+		;;
+	-o|--output)
+		output="$2"
+		shift
 		;;
 	-e|--grep)
 		pattern="$2"
@@ -86,6 +91,7 @@ if test -n "$creators"; then
 		}'
 fi
 
+test -n "$output" && exec >"$output"
 if test -n "$filter"; then
 	gl_ssh_command expand "$pattern" |
 		awk -F'\t' -v c="$creators" "$filter"

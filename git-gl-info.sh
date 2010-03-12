@@ -12,6 +12,7 @@ git gl-info [options] [<server>]
 --
 q,quiet        be quiet
 v,verbose      be verbose
+o,output=!     write the permissions to the specified file
 u,user=!       display info for the specied user (needs gitolite-admin access)
 
     <server>      Host name, git URL or remote name
@@ -19,7 +20,7 @@ u,user=!       display info for the specied user (needs gitolite-admin access)
 
 . git-sh-setup
 
-users=
+output= users=
 while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
@@ -35,6 +36,10 @@ while test $# != 0; do
 		;;
 	--no-verbose)
 		VERBOSE=
+		;;
+	-o|--output)
+		output="$2"
+		shift
 		;;
 	-u|--user)
 		users="$users $2"
@@ -53,4 +58,5 @@ done
 test "$#" -le 1 || usage
 
 resolve_remote "$1"
+test -n "$output" && exec >"$output"
 gl_ssh_command info $users

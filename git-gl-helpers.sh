@@ -87,6 +87,8 @@ gl_ssh_command() {
 
 gl_get_property() {
 	name="$1"
+	output="$2"
+	test -n "$output" && exec >"$output"
 	gl_ssh_command "get$name" "$GL_PATH"
 }
 

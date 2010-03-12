@@ -9,7 +9,7 @@ GL_PATH_NEEDED=Yes
 
 NONGIT_OK=Yes
 OPTIONS_SPEC="\
-git gl-perms [--get] [<repository>]
+git gl-perms [--get] [--output=<file>] [<repository>]
 git gl-perms --set[=<permission> | --file=<file>] [<repository>]
 git gl-perms --add=<permission> [<repository>]
 git gl-perms --edit [<repository>]
@@ -26,6 +26,7 @@ edit!             edit permissions
 delete!           remove permissions
 
   Options
+o,output=!        write the permissions to the specified file
 F,file=!          set the permissions from the specified file
 
     <repository>       Git URL or remote name
@@ -33,7 +34,7 @@ F,file=!          set the permissions from the specified file
 
 . git-sh-setup
 
-action= perms=
+action= perms= output=
 while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
@@ -50,9 +51,15 @@ while test $# != 0; do
 	--no-verbose)
 		VERBOSE=
 		;;
-	--get|--edit|--delete)
-		test -z "$action" || usage
-		action=${1#--}
+	--get)
+		test -z "$action" -o "$action" = "get" || usage
+		action="get"
+		;;
+	-o|--output)
+		test -z "$action" -o "$action" = "get" || usage
+		action="get"
+		output="$2"
+		shift
 		;;
 	--set)
 		test -z "$action" -o "$action" = "set" || usage
@@ -76,6 +83,10 @@ while test $# != 0; do
 			*) perms="$2"; shift ;;
 		esac
 		;;
+	--edit|--delete)
+		test -z "$action" || usage
+		action=${1#--}
+		;;
 	--)
 		shift
 		break
@@ -92,8 +103,8 @@ test -n "$action" || action="get"
 resolve_remote "$1"
 
 case "$action" in
-	get)    gl_get_property "perms" ;;
-	set)    gl_set_property "perms" "$perms";;
+	get)    gl_get_property "perms" "$output" ;;
+	set)    gl_set_property "perms" "$perms" ;;
 	edit)   gl_edit_property "perms" ;;
 	delete) gl_delete_property "perms" ;;
 	add)
