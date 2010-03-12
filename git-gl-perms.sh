@@ -16,6 +16,7 @@ git gl-perms --edit [<repository>]
 git gl-perms --delete [<repository>]
 --
 q,quiet           be quiet
+v,verbose         be verbose
 
   Actions
 get!              display permissions (default)
@@ -37,9 +38,17 @@ while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
 		GIT_QUIET=1
+		VERBOSE=
 		;;
 	--no-quiet)
 		GIT_QUIET=
+		;;
+	-v|--verbose)
+		GIT_QUIET=
+		VERBOSE=1
+		;;
+	--no-verbose)
+		VERBOSE=
 		;;
 	--get|--edit|--delete)
 		test -z "$action" || usage
@@ -89,6 +98,8 @@ case "$action" in
 	delete) gl_delete_property "perms" ;;
 	add)
 		if test -z "$perms"; then
+			test -z "$GIT_QUIET" &&
+				printf 'Reading "perms" from stdin...\n' >&2
 			perms=$(cat) || exit $?
 		fi
 		gl_edit_property "perms" "printf '%s\n' '$perms' >> "

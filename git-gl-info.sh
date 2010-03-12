@@ -11,6 +11,7 @@ OPTIONS_SPEC="\
 git gl-info [options] [<server>]
 --
 q,quiet        be quiet
+v,verbose      be verbose
 u,user=!       display info for the specied user (needs gitolite-admin access)
 
     <server>      Host name, git URL or remote name
@@ -23,9 +24,17 @@ while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
 		GIT_QUIET=1
+		VERBOSE=
 		;;
 	--no-quiet)
 		GIT_QUIET=
+		;;
+	-v|--verbose)
+		GIT_QUIET=
+		VERBOSE=1
+		;;
+	--no-verbose)
+		VERBOSE=
 		;;
 	-u|--user)
 		users="$users $2"

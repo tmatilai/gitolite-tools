@@ -12,6 +12,7 @@ OPTIONS_SPEC="\
 git gl-ls [options] [<server>]
 --
 q,quiet        be quiet
+v,verbose      be verbose
 
  Filter options
 e,grep=!       list only repos that match the specified pattern
@@ -30,9 +31,17 @@ while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
 		GIT_QUIET=1
+		VERBOSE=
 		;;
 	--no-quiet)
 		GIT_QUIET=
+		;;
+	-v|--verbose)
+		GIT_QUIET=
+		VERBOSE=1
+		;;
+	--no-verbose)
+		VERBOSE=
 		;;
 	-e|--grep)
 		pattern="$2"

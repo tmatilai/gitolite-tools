@@ -15,6 +15,7 @@ git gl-desc --edit [<repository>]
 git gl-desc --delete [<repository>]
 --
 q,quiet           be quiet
+v,verbose         be verbose
 
   Actions
 get!              display description (default)
@@ -35,9 +36,17 @@ while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
 		GIT_QUIET=1
+		VERBOSE=
 		;;
 	--no-quiet)
 		GIT_QUIET=
+		;;
+	-v|--verbose)
+		GIT_QUIET=
+		VERBOSE=1
+		;;
+	--no-verbose)
+		VERBOSE=
 		;;
 	--get|--edit|--delete)
 		test -z "$action" || usage
