@@ -11,14 +11,32 @@ endif
 INSTALL = install
 RM = rm -f
 
-GIT_PROGRAMS += git-gl-helpers
-GIT_PROGRAMS += git-gl-info
-GIT_PROGRAMS += git-gl-perms
+SCRIPT_SH += git-gl-desc.sh
+SCRIPT_SH += git-gl-helpers.sh
+SCRIPT_SH += git-gl-info.sh
+SCRIPT_SH += git-gl-ls.sh
+SCRIPT_SH += git-gl-perms.sh
 
-all:
+SCRIPTS = $(patsubst %.sh,%,$(SCRIPT_SH))
+GIT_PROGRAMS = $(SCRIPTS)
+
+ifneq ($(findstring $(MAKEFLAGS),s),s)
+ifndef V
+	QUIET_GEN = @echo '   ' GEN $@;
+endif
+endif
+
+all: $(GIT_PROGRAMS)
 
 clean:
+	$(RM) $(GIT_PROGRAMS)
 	$(RM) gitolite-tools.tar.gz
+
+$(patsubst %.sh,%,$(SCRIPT_SH)) : % : %.sh
+	$(QUIET_GEN)$(RM) $@ && \
+	ln $@.sh $@ 2>/dev/null || \
+	ln -s $@.sh $@ 2>/dev/null || \
+	cp $@.sh $@
 
 install-git-programs:
 	$(INSTALL) -d -m 755 '$(DESTDIR)$(gitexecdir)'
@@ -33,6 +51,6 @@ install-vim:
 install: all install-git-programs install-vim
 
 dist:
-	git archive HEAD | gzip -9 > gitolite-tools.tar.gz
+	git archive --prefix='gitolite-tools/' HEAD | gzip -9 > gitolite-tools.tar.gz
 
 .PHONY: all clean install install-git-programs install-vim dist
