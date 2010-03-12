@@ -70,9 +70,10 @@ resolve_remote() {
 	test -n "$GL_PATH_NEEDED" -a -z "$GL_PATH" && die "fatal: Invalid URL: '$url'"
 	if test -z "$GIT_QUIET"; then
 		printf '+++ '
-		test "$remote" != "$url" &&  printf '%s: ' "$remote"
-		                             printf 'ssh://%s' "$GL_HOST"
-		test -n "$GL_PORT" &&        printf ':%s' "$GL_PORT"
+		test -n "$remote" -a "$remote" != "$url" &&
+			printf '%s: ' "$remote"
+		printf 'ssh://%s' "$GL_HOST"
+		test -n "$GL_PORT" && printf ':%s' "$GL_PORT"
 		test -n "$GL_PATH_NEEDED" && printf '/%s' "$GL_PATH"
 		printf ' +++\n'
 	fi >&2
