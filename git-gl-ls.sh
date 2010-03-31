@@ -13,7 +13,7 @@ git gl-ls [options] [<server>]
 --
 q,quiet        be quiet
 v,verbose      be verbose
-o,output=!     write the permissions to the specified file
+o,output=!     write the description to the specified file
 
  Filter options
 e,grep=!       list only repos that match the specified pattern

@@ -24,7 +24,7 @@ edit!             edit description
 delete!           remove description
 
   Options
-o,output=!        write the permissions to the specified file
+o,output=!        write the description to the specified file
 F,file=!          set the description from the specified file
 
     <repository>       Git URL or remote name
