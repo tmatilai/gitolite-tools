@@ -1,4 +1,4 @@
-gitexecdir = $(shell git --exec-path || true)
+gitexecdir = $(shell git --exec-path)
 ifeq (,$(gitexecdir))
 $(error gitexecdir not defined)
 endif
