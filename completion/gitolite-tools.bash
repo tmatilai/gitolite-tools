@@ -46,7 +46,7 @@ _git_gl_ls ()
 			--quiet --verbose
 			--output=
 			--grep=
-			--creator= --no-creator --mine
+			--creator= --mine
 			--wildcard --no-wildcard
 			"
 		;;
