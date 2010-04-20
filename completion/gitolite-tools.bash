@@ -22,6 +22,21 @@ _git_gl_desc ()
 	esac
 }
 
+_git_gl_htpasswd ()
+{
+	case "${COMP_WORDS[COMP_CWORD]}" in
+	--*)
+		__gitcomp "
+			--quiet --verbose
+			--set --set= --file=
+			"
+		;;
+	*)
+		__gitcomp "$(__git_remotes)"
+		;;
+	esac
+}
+
 _git_gl_info ()
 {
 	case "${COMP_WORDS[COMP_CWORD]}" in
