@@ -10,7 +10,7 @@ Vcs-Git: git://github.com/tmatilai/gitolite-tools.git
 
 Package: gitolite-tools
 Architecture: all
-Depends: git-core, openssh-client, ${misc:Depends}
+Depends: git (>= 1:1.7.0.4) | git-core, openssh-client, ${misc:Depends}
 Recommends: vim-addon-manager
 Description: Collection of tools to work with gitolite repositories
  Git programs to work with gitolite server and repositories.
