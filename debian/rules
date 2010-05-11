@@ -1,7 +1,13 @@
 #!/usr/bin/make -f
 
+MAKE_OPTIONS := gitexecdir=/usr/lib/git-core
+MAKE_OPTIONS += vimdir=/usr/share/vim/addons
+
 %:
 	dh $@
 
+override_dh_auto_build:
+	make $(MAKE_OPTIONS) all
+
 override_dh_auto_install:
-	dh_auto_install -- gitexecdir=/usr/lib/git-core vimdir=/usr/share/vim/addons
+	make install DESTDIR=debian/gitolite-tools $(MAKE_OPTIONS) install
