@@ -60,6 +60,7 @@ _git_gl_ls ()
 		__gitcomp "
 			--quiet --verbose
 			--output=
+			--path-only
 			--grep=
 			--creator= --mine
 			--wildcard --no-wildcard

@@ -14,6 +14,7 @@ git gl-ls [options] [<server>]
 q,quiet        be quiet
 v,verbose      be verbose
 o,output=!     write the description to the specified file
+path-only      list only repository paths, no ACLs etc.
 
  Filter options
 e,grep=!       list only repos that match the specified pattern
@@ -27,7 +28,7 @@ wildcard       list (non-)wildcard repositories
 
 . git-sh-setup
 
-output= pattern= creators= mine= wildcard=
+output= path_only= pattern= creators= mine= wildcard=
 while test $# != 0; do
 	case "$1" in
 	-q|--quiet)
@@ -47,6 +48,12 @@ while test $# != 0; do
 	-o|--output)
 		output="$2"
 		shift
+		;;
+	--path-only)
+		path_only=1
+		;;
+	--no-path-only)
+		path_only=
 		;;
 	-e|--grep)
 		pattern="$2"
@@ -82,13 +89,13 @@ resolve_remote "$1"
 filter=
 if test -n "$wildcard"; then
 	filter="$filter"'
-		$2 ~ /^\(.+\)$/ { print; next }'
+		$2 ~ /^\(.+\)$/ { gl_print(); next }'
 fi
 if test -n "$creators" -o -n "$mine"; then
 	filter="$filter"'
 		BEGIN { split(c, creators, " ") }
 		{ for (i in creators)
-			if (creators[i] == $2) { print; next }
+			if (creators[i] == $2) { gl_print(); next }
 		}'
 	if test -n "$mine"; then
 		filter="$filter"'
@@ -99,11 +106,18 @@ if test -n "$creators" -o -n "$mine"; then
 	fi
 fi
 if test -z "$filter"; then
-	filter='NR > 2 { print }'
+	filter='NR > 2 { gl_print() }'
 fi
 if test -z "$GIT_QUIET"; then
 	filter="$filter"'
-		NR <= 2 { print; next }'
+		NR <= 2 { gl_print(); next }'
+fi
+if test -n "$path_only"; then
+	filter="$filter"'
+		function gl_print() { print $3 }'
+else
+	filter="$filter"'
+		function gl_print() { print }'
 fi
 
 test -n "$output" && exec >"$output"
