@@ -4,7 +4,7 @@ MAKE_OPTIONS := gitexecdir=/usr/lib/git-core
 MAKE_OPTIONS += vimdir=/usr/share/vim/addons
 
 %:
-	dh $@
+	dh --with bash-completion $@
 
 override_dh_auto_build:
 	make $(MAKE_OPTIONS) all
