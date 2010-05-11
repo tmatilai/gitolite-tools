@@ -3,7 +3,7 @@ Section: devel
 Priority: extra
 Maintainer: Teemu Matilainen <teemu.matilainen@iki.fi>
 Build-Depends: debhelper (>= 7.0.50~)
-Standards-Version: 3.8.3
+Standards-Version: 3.8.4
 Homepage: http://github.com/tmatilai/gitolite-tools
 Vcs-Browser: http://github.com/tmatilai/gitolite-tools
 Vcs-Git: git://github.com/tmatilai/gitolite-tools.git

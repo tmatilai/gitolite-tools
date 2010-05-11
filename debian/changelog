@@ -4,8 +4,11 @@ gitolite-tools (0.4-1~1) UNRELEASED; urgency=low
   * New upstream release
     - New command: git gl-htpasswd
     - Bash command completion
+  * Update Standards-Version to 3.8.4
+  * Add debian/source/format
+  * Add debian/watch
 
- -- Teemu Matilainen <teemu.matilainen@iki.fi>  Tue, 11 May 2010 14:40:16 +0300
+ -- Teemu Matilainen <teemu.matilainen@iki.fi>  Wed, 12 May 2010 04:42:22 +0300
 
 gitolite-tools (0.3-1) unstable; urgency=low
 

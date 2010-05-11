@@ -1,0 +1,7 @@
+# debian/watch for gitolite-tools
+
+version=3
+
+opts=downloadurlmangle=s/archives/tarball/,filenamemangle=s/.*\/(.*)/gitolite-tools-$1.tar.gz/ \
+  http://github.com/tmatilai/gitolite-tools/archives/release \
+  .*/release/([0-9.]+)
