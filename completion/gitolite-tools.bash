@@ -1,7 +1,11 @@
 # Copyright (c) 2010 Teemu Matilainen
 #
 # Bash completion for gitolite-tools
-# Requires completion script of git v1.7.1 or newer
+#
+# For git versions older than 1.7.1 this should be processed _after_ the
+# git completion script (contrib/completion/git-completion.bash in git
+# source tree) as "_git" completion function is overridden to support
+# external git commands.
 #
 # Set GIT_GL_COMPLETE_REPOS to "0" to disable completion of remote
 # repository paths.  It uses git gl-ls, which can be slow and error
@@ -167,3 +171,86 @@ _git_gl_perms ()
 		;;
 	esac
 }
+
+# Temporary function to compare version number strings
+# Usage: cmp_versions <version1> <version2>
+# Returns:
+#  99 if version1 < version2
+# 100 if version1 == version2
+# 101 if version1 > version2
+__git_cmp_versions ()
+{
+	local v1=$( tr '.' ' ' <<<"$1" )
+	local v2=$( tr '.' ' ' <<<"$2" )
+	local max1=${#v1[@]} max2=${#v2[@]}
+	local i a1 a2
+	for (( i=0; i<max1 || i<max2; i++ )); do
+		a1=${v1[i]} a2=${v2[i]}
+		for op in '-lt' '<'; do
+			[ "$a1" "$op" "$a2" ] && return 99
+			[ $? = 1 ] && [ "$a2" "$op" "$a1" ] && return 101
+		done 2>/dev/null
+	done
+	return 100
+}
+
+# Override _git completion function for git version < 1.7.1
+# to support external git commands.
+__git_version="$(git --version | sed -ne 's/^git version //p')"
+__git_cmp_versions "$__git_version" "1.7.1"
+[ $? -lt 100 ] &&
+_git ()
+{
+	local i c=1 command __git_dir
+
+	while [ $c -lt $COMP_CWORD ]; do
+		i="${COMP_WORDS[c]}"
+		case "$i" in
+		--git-dir=*) __git_dir="${i#--git-dir=}" ;;
+		--bare)      __git_dir="." ;;
+		--version|-p|--paginate) ;;
+		--help) command="help"; break ;;
+		*) command="$i"; break ;;
+		esac
+		c=$((++c))
+	done
+
+	if [ -z "$command" ]; then
+		case "${COMP_WORDS[COMP_CWORD]}" in
+		--*)   __gitcomp "
+			--paginate
+			--no-pager
+			--git-dir=
+			--bare
+			--version
+			--exec-path
+			--html-path
+			--work-tree=
+			--help
+			"
+			;;
+		*)
+			if declare -F __git_compute_porcelain_commands >/dev/null; then
+				__git_compute_porcelain_commands
+				__gitcomp "$__git_porcelain_commands $(__git_aliases)"
+			elif declare -F __git_porcelain_commands >/dev/null; then
+				__gitcomp "$(__git_porcelain_commands) $(__git_aliases)"
+			else
+				__gitcomp "$(__git_commands) $(__git_aliases)"
+			fi
+			;;
+		esac
+		return
+	fi
+
+	local completion_func="_git_${command//-/_}"
+	declare -F $completion_func >/dev/null && $completion_func && return
+
+	local expansion=$(__git_aliased_command "$command")
+	if [ -n "$expansion" ]; then
+		completion_func="_git_${expansion//-/_}"
+		declare -F $completion_func >/dev/null && $completion_func
+	fi
+}
+
+unset -f __git_cmp_versions
