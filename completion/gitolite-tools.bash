@@ -2,12 +2,27 @@
 #
 # Bash completion for gitolite-tools
 # Requires completion script of git v1.7.1 or newer
+#
+# Set GIT_GL_COMPLETE_REPOS to "0" to disable completion of remote
+# repository paths.  It uses git gl-ls, which can be slow and error
+# prone in some cases.
 
-__git_complete_gl_remote ()
+
+# Complete known ssh hosts and git remote names
+# Usage: __git_complete_gl_remote_name [-c] <cur>
+__git_complete_gl_remote_name ()
 {
 	local opts=
-	if declare -F _known_hosts >/dev/null; then
-		[ "$1" = "-c" ] && opts="-c"
+	if [ "$1" = "-c" ]; then
+		opts="-c"
+		shift
+	fi
+	local cur="$1"
+	[ "$cur" == -* ] && return
+
+	if declare -F _known_hosts_real >/dev/null; then
+		_known_hosts_real -a $opts "$cur"
+	elif declare -F _known_hosts >/dev/null; then
 		_known_hosts -a $opts
 	else
 		[ "$1" = "-c" ] && opts="-S ':'"
@@ -16,21 +31,56 @@ __git_complete_gl_remote ()
 	COMPREPLY=( "${COMPREPLY[@]}" $(compgen -W "$(__git_remotes)" -- $cur) )
 }
 
-# __git_gl_repos <remote> <path> <gl-ls params>
+# Complete git URI
+# __git_complete_gl_remote_uri [<gl-ls params>]
+__git_complete_gl_remote_uri ()
+{
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	declare -F _get_cword >/dev/null && cur=$(_get_cword :)
+	local pfx= remote= path=
+	case "$cur" in
+	-*)
+		return
+		;;
+	?*:*)
+		remote=${cur%%:*}
+		path=${cur#*:}
+		;;
+	:)
+		[ ${#COMP_WORDS[@]} -ge 4 ] || return 0
+		remote=${COMP_WORDS[COMP_CWORD-1]}
+		;;
+	*)
+		if [ ${#COMP_WORDS[@]} -ge 5 ] &&
+				[ "${COMP_WORDS[COMP_CWORD-1]}" = ":" ]; then
+			remote=${COMP_WORDS[COMP_CWORD-2]}
+			path="$cur"
+		fi
+		;;
+	esac
+	if [ -n "$remote" ]; then
+		__gitcomp "$(__git_gl_repos "$remote" "$path" "$@")" "$pfx" "$path"
+	else
+		__git_complete_gl_remote_name -c "$cur"
+	fi
+}
+
+# Get repository paths from the specified remote
+# Usage: __git_gl_repos <remote> <path> [<gl-ls params>]
 __git_gl_repos ()
 {
+	[ "$GIT_GL_COMPLETE_REPOS" = 0 ] && return
+
 	local remote="$1" path="$2"
 	shift 2
 	git --git-dir="$(__gitdir)" gl-ls --quiet --path-only --grep "^$path" "$@" \
 		-- "$remote" 2>/dev/null
 }
 
+
 _git_gl_desc ()
 {
-	local cur=${COMP_WORDS[COMP_CWORD]}
-	declare -F _get_cword >/dev/null && cur=$(_get_cword :)
-	local pfx= remote= path=
-	case "$cur" in
+	case "${COMP_WORDS[COMP_CWORD]}" in
 	--*)
 		__gitcomp "
 			--quiet --verbose
@@ -40,34 +90,17 @@ _git_gl_desc ()
 			--edit
 			--delete
 			"
-		return
-		;;
-	?*:*)
-		remote=${cur%%:*}
-		path=${cur#*:}
-		pfx="$remote"
-		;;
-	:)
-		remote=${COMP_WORDS[COMP_CWORD-1]}
 		;;
 	*)
-		local prev=${COMP_WORDS[COMP_CWORD-1]}
-		if [ "$prev" = ":" ]; then
-			remote=${COMP_WORDS[COMP_CWORD-2]}
-			path="$cur"
-		fi
+		__git_complete_gl_remote_uri --mine
 		;;
 	esac
-	if [ -n "$remote" ]; then
-		__gitcomp "$(__git_gl_repos "$remote" "$path")" "$pfx" "$path"
-	else
-		__git_complete_gl_remote -c
-	fi
 }
 
 _git_gl_htpasswd ()
 {
-	case "${COMP_WORDS[COMP_CWORD]}" in
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	case "$cur" in
 	--*)
 		__gitcomp "
 			--quiet --verbose
@@ -75,14 +108,15 @@ _git_gl_htpasswd ()
 			"
 		;;
 	*)
-		__git_complete_gl_remote
+		__git_complete_gl_remote_name "$cur"
 		;;
 	esac
 }
 
 _git_gl_info ()
 {
-	case "${COMP_WORDS[COMP_CWORD]}" in
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	case "$cur" in
 	--*)
 		__gitcomp "
 			--quiet --verbose
@@ -91,14 +125,15 @@ _git_gl_info ()
 			"
 		;;
 	*)
-		__git_complete_gl_remote
+		__git_complete_gl_remote_name "$cur"
 		;;
 	esac
 }
 
 _git_gl_ls ()
 {
-	case "${COMP_WORDS[COMP_CWORD]}" in
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	case "$cur" in
 	--*)
 		__gitcomp "
 			--quiet --verbose
@@ -110,17 +145,14 @@ _git_gl_ls ()
 			"
 		;;
 	*)
-		__git_complete_gl_remote
+		__git_complete_gl_remote_name "$cur"
 		;;
 	esac
 }
 
 _git_gl_perms ()
 {
-	local cur=${COMP_WORDS[COMP_CWORD]}
-	declare -F _get_cword >/dev/null && cur=$(_get_cword :)
-	local pfx= remote= path=
-	case "$cur" in
+	case "${COMP_WORDS[COMP_CWORD]}" in
 	--*)
 		__gitcomp "
 			--quiet --verbose
@@ -129,27 +161,9 @@ _git_gl_perms ()
 			--edit
 			--delete
 			"
-		return
-		;;
-	?*:*)
-		remote=${cur%%:*}
-		path=${cur#*:}
-		pfx="$remote"
-		;;
-	:)
-		remote=${COMP_WORDS[COMP_CWORD-1]}
 		;;
 	*)
-		local prev=${COMP_WORDS[COMP_CWORD-1]}
-		if [ "$prev" = ":" ]; then
-			remote=${COMP_WORDS[COMP_CWORD-2]}
-			path="$cur"
-		fi
+		__git_complete_gl_remote_uri --mine
 		;;
 	esac
-	if [ -n "$remote" ]; then
-		__gitcomp "$(__git_gl_repos "$remote" "$path" --mine)" "$pfx" "$path"
-	else
-		__git_complete_gl_remote -c
-	fi
 }
