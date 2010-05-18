@@ -1,4 +1,4 @@
-gitexecdir = $(shell git --exec-path || true)
+gitexecdir = $(shell git --exec-path)
 ifeq (,$(gitexecdir))
 $(error gitexecdir not defined)
 endif
@@ -13,6 +13,7 @@ RM = rm -f
 
 SCRIPT_SH += git-gl-desc.sh
 SCRIPT_SH += git-gl-helpers.sh
+SCRIPT_SH += git-gl-htpasswd.sh
 SCRIPT_SH += git-gl-info.sh
 SCRIPT_SH += git-gl-ls.sh
 SCRIPT_SH += git-gl-perms.sh

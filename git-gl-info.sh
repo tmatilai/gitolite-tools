@@ -12,8 +12,8 @@ git gl-info [options] [<server>]
 --
 q,quiet        be quiet
 v,verbose      be verbose
-o,output=!     write the permissions to the specified file
-u,user=!       display info for the specied user (needs gitolite-admin access)
+o,output=!     write the info to the specified file
+u,user=!       display info for the specified user (needs gitolite-admin access)
 
     <server>      Host name, git URL or remote name
 "
