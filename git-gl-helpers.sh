@@ -8,10 +8,6 @@ GL_HOST=
 GL_PORT=
 GL_PATH=
 
-# own gitolite username
-test -n "$GL_USER" ||
-	GL_USER=$(git config gitolite.username || echo "$USER")
-
 is_git_repository() {
 	git rev-parse --git-dir >/dev/null 2>&1
 }
