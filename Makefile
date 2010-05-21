@@ -13,6 +13,8 @@ endif
 
 INSTALL = install
 RM = rm -f
+
+AWK_PATH = gawk
 SHELL_PATH = /bin/sh
 
 SCRIPT_SH =
@@ -42,6 +44,7 @@ clean:
 define cmd_munge_script
 $(RM) $@ $@+ && \
 sed -e '1s|#!.*/sh|#!$(SHELL_PATH)|' \
+    -e 's|@AWK_PATH@|$(AWK_PATH)|' \
     $@.sh >$@+
 endef
 

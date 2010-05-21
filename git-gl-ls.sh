@@ -122,4 +122,4 @@ fi
 
 test -n "$output" && exec >"$output"
 gl_ssh_command expand "$pattern" |
-	awk -F'\t' -v c="$creators" "$filter"
+	@AWK_PATH@ -F'\t' -v c="$creators" "$filter"
