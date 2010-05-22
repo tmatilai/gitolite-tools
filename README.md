@@ -26,13 +26,21 @@ If git is installed to your home directory, `sudo` is not needed.
 
 Installation directory can also be specified by setting `gitexecdir`, e.g.:
 
-	make && make gitexecdir=$HOME/gitexec install
+	make gitexecdir=$HOME/gitexec install
 
 This can be useful if you can't or don't want to mess with the git
 installation. gitolite-tools can then be used by setting `GIT_EXEC_PATH`.
 For example:
 
 	GIT_EXEC_PATH="$HOME/gitexec:$(git --exec-path)"
+
+Other useful overridable Make variables are:
+
+* `SHELL_PATH` (default: /bin/sh)
+* `AWK_PATH`  (default: gawk)
+* `INSTALL` (default: install)
+
+Search more from the Makefile.
 
 Copyright
 ---------
