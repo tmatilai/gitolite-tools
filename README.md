@@ -17,6 +17,14 @@ Collection of tools to work with [gitolite][] repositories.
 Installation
 ------------
 
+### Debian and Ubuntu Package
+
+The same package should work for all relatively recent Debian and Ubuntu
+versions. Ubuntu PPA repository can be found [here][ppa] and the
+individual packages [here][downloads].
+
+### Manual
+
 By default, the programs will be installed to "`git --exec-path`".
 Just call:
 
@@ -51,3 +59,5 @@ License: [Apache 2](http://www.apache.org/licenses/LICENSE-2.0)
 
 [gitolite]: https://github.com/sitaramc/gitolite
 [wildrepos]: https://github.com/sitaramc/gitolite/blob/master/doc/wildcard-repositories.mkd
+[ppa]: https://launchpad.net/~tmatilai/+archive/ppa
+[downloads]: https://github.com/tmatilai/gitolite-tools/downloads
