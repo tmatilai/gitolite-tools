@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010 Teemu Matilainen
+# Copyright (c) 2010-2011 Teemu Matilainen
 #
 # Helper routines for gitolite-tools
 
@@ -21,7 +21,8 @@ resolve_remote() {
 	if is_git_repository; then
 		. git-parse-remote
 		test -n "$remote" || remote=$(get_default_remote)
-		url=$(get_remote_url "$remote")
+		url=$(git ls-remote --get-url "$remote" 2>/dev/null ||
+			get_remote_url "$remote")
 	elif test -z "$remote"; then
 		url=$(git config gitolite.defaultRemote)
 	else
